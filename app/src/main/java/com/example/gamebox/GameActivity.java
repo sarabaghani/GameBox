@@ -13,7 +13,7 @@ public class GameActivity extends AppCompatActivity {
     private Button mButtonTictac;
     private Button mButtonFourInaRow;
     FragmentManager fragmentManager = getSupportFragmentManager();
-    Fragment fragment = fragmentManager.findFragmentById(R.id.game_container);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,10 +24,15 @@ public class GameActivity extends AppCompatActivity {
         mButtonTictac.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Fragment fragment = fragmentManager.findFragmentById(R.id.game_container);
                 TicTacToeFrag ticTacToeFrag = new TicTacToeFrag();
-                if(fragment==null){
+                if (fragment == null) {
                     fragmentManager.beginTransaction()
                             .add(R.id.game_container, ticTacToeFrag)
+                            .commit();
+                } else {
+                    fragmentManager.beginTransaction()
+                            .replace(R.id.game_container, ticTacToeFrag)
                             .commit();
                 }
             }
@@ -35,10 +40,15 @@ public class GameActivity extends AppCompatActivity {
         mButtonFourInaRow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Fragment fragment = fragmentManager.findFragmentById(R.id.game_container);
                 FourInaRowFrag fourInaRowFrag = new FourInaRowFrag();
-                if(fragment==null){
+                if (fragment == null) {
                     fragmentManager.beginTransaction()
                             .add(R.id.game_container, fourInaRowFrag)
+                            .commit();
+                } else {
+                    fragmentManager.beginTransaction()
+                            .replace(R.id.game_container, fourInaRowFrag)
                             .commit();
                 }
             }
