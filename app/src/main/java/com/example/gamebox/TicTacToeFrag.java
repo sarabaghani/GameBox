@@ -6,13 +6,26 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.snackbar.Snackbar;
 
 public class TicTacToeFrag extends Fragment {
+    public static final String BUNDLE_GAME_RUNNING_STATE = "game running state";
+    public static final String BUNDLE_TURN = "bundle turn";
+    public static final String BUNDLE_B_11_TAG = "bundle b11 tag";
+    private static final String BUNDLE_B_12_TAG = "bundle b12 tag";
+    private static final String BUNDLE_B_13_TAG = "bundle b13 tag";
+    private static final String BUNDLE_B_33_TAG = "bundle b33 tag";
+    private static final String BUNDLE_B_23_TAG = "bundle b23 tag";
+    private static final String BUNDLE_B_21_TAG = "bundle b21 tag";
+    private static final String BUNDLE_B_22_TAG = "bundle b22 tag";
+    private static final String BUNDLE_B_31_TAG = "bundle b31 tag";
+    private static final String BUNDLE_B_32_TAG = "bundle b32 tag";
     private ImageButton b11, b12, b13, b21, b22, b23, b31, b32, b33;
     boolean turn = true;
+    boolean gameRun = true;
 
     public TicTacToeFrag() {
         // Required empty public constructor
@@ -31,7 +44,29 @@ public class TicTacToeFrag extends Fragment {
         View view = inflater.inflate(R.layout.fragment_tic_tac_toe, container, false);
         findViews(view);
         setListeners();
+        if (savedInstanceState != null) {
+            turn = savedInstanceState.getBoolean(BUNDLE_TURN);
+            gameRun = savedInstanceState.getBoolean(BUNDLE_GAME_RUNNING_STATE);
+            getSavedImage(savedInstanceState,BUNDLE_B_11_TAG,b11);
+            getSavedImage(savedInstanceState,BUNDLE_B_12_TAG,b12);
+            getSavedImage(savedInstanceState,BUNDLE_B_13_TAG,b13);
+            getSavedImage(savedInstanceState,BUNDLE_B_21_TAG,b21);
+            getSavedImage(savedInstanceState,BUNDLE_B_22_TAG,b22);
+            getSavedImage(savedInstanceState,BUNDLE_B_23_TAG,b23);
+            getSavedImage(savedInstanceState,BUNDLE_B_31_TAG,b31);
+            getSavedImage(savedInstanceState,BUNDLE_B_32_TAG,b32);
+            getSavedImage(savedInstanceState,BUNDLE_B_33_TAG,b33);
+        }
+        if (!gameRun)
+            disableBtns();
         return view;
+    }
+
+    private void getSavedImage(Bundle savedInstanceState,String s, ImageButton b) {
+        if (savedInstanceState.getInt(s) != 0) {
+            b.setTag(savedInstanceState.getInt(s));
+            b.setImageResource((int) b.getTag());
+        }
     }
 
     private void findViews(View view) {
@@ -123,6 +158,7 @@ public class TicTacToeFrag extends Fragment {
 
     }
 
+
     private void paint(ImageButton x) {
         if (turn) {
             x.setImageResource(R.drawable.cross);
@@ -141,6 +177,15 @@ public class TicTacToeFrag extends Fragment {
             s = "X";
         else
             s = "O";
+        disableBtns();
+
+        Snackbar.make(getActivity().findViewById(R.id.game_container),
+                s + " won the game !!", Snackbar.LENGTH_LONG)
+                .show();
+        gameRun = false;
+    }
+
+    private void disableBtns() {
         b11.setEnabled(false);
         b12.setEnabled(false);
         b13.setEnabled(false);
@@ -150,10 +195,6 @@ public class TicTacToeFrag extends Fragment {
         b31.setEnabled(false);
         b32.setEnabled(false);
         b33.setEnabled(false);
-
-        Snackbar.make(getActivity().findViewById(R.id.game_container),
-                s + " won the game !!", Snackbar.LENGTH_LONG)
-                .show();
     }
 
     private boolean upperHorizon() {
@@ -258,5 +299,27 @@ public class TicTacToeFrag extends Fragment {
                 res.equals((Integer) b22.getTag()) && res.equals((Integer) b33.getTag()))
             flag = true;
         return flag;
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(BUNDLE_GAME_RUNNING_STATE, gameRun);
+        outState.putBoolean(BUNDLE_TURN, turn);
+        saveImageState(outState,b11,BUNDLE_B_11_TAG);
+        saveImageState(outState,b12,BUNDLE_B_12_TAG);
+        saveImageState(outState,b13,BUNDLE_B_13_TAG);
+        saveImageState(outState,b21,BUNDLE_B_21_TAG);
+        saveImageState(outState,b22,BUNDLE_B_22_TAG);
+        saveImageState(outState,b23,BUNDLE_B_23_TAG);
+        saveImageState(outState,b31,BUNDLE_B_31_TAG);
+        saveImageState(outState,b32,BUNDLE_B_32_TAG);
+        saveImageState(outState,b33,BUNDLE_B_33_TAG);
+
+    }
+
+    private void saveImageState(@NonNull Bundle outState, ImageButton b,String s) {
+        if(b.getTag()!=null)
+        outState.putInt(s, (int) b.getTag());
     }
 }

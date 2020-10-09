@@ -3,22 +3,26 @@ package com.example.gamebox;
 import android.graphics.Color;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 
 
 public class FourInaRowFrag extends Fragment {
 
+    private static final String BUNDLE_COLORED_CELLS = "colored cells";
+    public static final String BUNDLE_TURN = "turn";
+    public static final String BUNDLE_GAME_RUNNING_STATE = "game running state";
     private Button b11, b12, b13, b14, b15, b21, b22, b23, b24, b25, b31, b32, b33, b34, b35,
             b41, b42, b43, b44, b45, b51, b52, b53, b54, b55;
     private boolean turn = true;
+    private boolean gameRun = true;
     int[][] arr = new int[11][11];
 
 
@@ -26,13 +30,10 @@ public class FourInaRowFrag extends Fragment {
         // Required empty public constructor
     }
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -47,6 +48,28 @@ public class FourInaRowFrag extends Fragment {
         b53.setEnabled(true);
         b54.setEnabled(true);
         b55.setEnabled(true);
+        if (savedInstanceState != null) {
+            turn = savedInstanceState.getBoolean(BUNDLE_TURN);
+            gameRun = savedInstanceState.getBoolean(BUNDLE_GAME_RUNNING_STATE);
+            arr = (int[][]) savedInstanceState.getSerializable(BUNDLE_COLORED_CELLS);
+            for (int i = 0; i < 11; i++) {
+                for (int j = 0; j < 11; j++) {
+                    if (arr[i][j] == 1) {
+                        relateBtn(i, j).setBackgroundColor(Color.rgb(0, 0, 255));
+                        relateBtn(i, j).setEnabled(false);
+                        if (i != 3 && arr[i - 1][j] == 0)
+                            relateBtn(i - 1, j).setEnabled(true);
+                    } else if (arr[i][j] == -1) {
+                        relateBtn(i, j).setBackgroundColor(Color.rgb(255, 0, 0));
+                        relateBtn(i, j).setEnabled(false);
+                        if (i != 3 && arr[i - 1][j] == 0)
+                            relateBtn(i - 1, j).setEnabled(true);
+                    }
+                }
+            }
+        }
+        if (!gameRun)
+            disableButtons();
         return view;
     }
 
@@ -374,6 +397,7 @@ public class FourInaRowFrag extends Fragment {
                 s + " won the game !!", Snackbar.LENGTH_LONG)
                 .show();
         disableButtons();
+        gameRun = false;
     }
 
     private void disableButtons() {
@@ -404,4 +428,69 @@ public class FourInaRowFrag extends Fragment {
         b55.setEnabled(false);
     }
 
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(BUNDLE_COLORED_CELLS, arr);
+        outState.putBoolean(BUNDLE_GAME_RUNNING_STATE, gameRun);
+        outState.putBoolean(BUNDLE_TURN, turn);
+    }
+
+    private Button relateBtn(int a, int b) {
+        String s = "" + (a - 2) + (b - 2);
+        switch (s) {
+            case "11":
+                return b11;
+            case "12":
+                return b12;
+            case "13":
+                return b13;
+            case "14":
+                return b14;
+            case "15":
+                return b15;
+            case "21":
+                return b21;
+            case "22":
+                return b22;
+            case "23":
+                return b23;
+            case "24":
+                return b24;
+            case "25":
+                return b25;
+            case "31":
+                return b31;
+            case "32":
+                return b32;
+            case "33":
+                return b33;
+            case "34":
+                return b34;
+            case "35":
+                return b35;
+            case "41":
+                return b41;
+            case "42":
+                return b42;
+            case "43":
+                return b43;
+            case "44":
+                return b44;
+            case "45":
+                return b45;
+            case "51":
+                return b51;
+            case "52":
+                return b52;
+            case "53":
+                return b53;
+            case "54":
+                return b54;
+            case "55":
+                return b55;
+            default:
+                return null;
+        }
+    }
 }
